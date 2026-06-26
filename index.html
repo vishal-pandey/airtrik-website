@@ -79,6 +79,7 @@
       background: var(--paper);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
+      position: relative;
     }
 
     /* graph-paper grid (engineering atmosphere) */
@@ -779,11 +780,51 @@
     @supports not (offset-path: path("M0 0 L1 1")) {
       .loop-pulse, .h-packet, .pf-packet, .sr-pulse, .ctaf-pulse { display: none; }
     }
+    /* ═══ journey — a TALL winding road; the signal descends as you scroll ═══ */
+    .journey { position: relative; background: var(--paper-alt); border-top: 1px solid var(--line); padding: 96px 0; }
+    .journey-head { text-align: center; max-width: 800px; margin: 0 auto; }
+    .journey-head .eyebrow { justify-content: center; }
+    .jr-title { font-size: clamp(30px, 4.6vw, 56px); line-height: 1.06; margin-top: 14px; }
+    .jr-vert { position: relative; width: 100%; max-width: 1080px; margin: 40px auto 0; }
+    .jr-vsvg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; color: var(--ink-2); pointer-events: none; overflow: visible; }
+    .jr-road-base { fill: none; stroke: var(--edge-line); stroke-width: 1.6; }
+    .jr-road-ink { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+    .jr-vnode { --lit: 0; color: color-mix(in srgb, var(--ink-4), var(--accent-ink) calc(var(--lit) * 100%)); }
+    .jr-diamond { fill: var(--paper-alt); stroke: currentColor; stroke-width: 1.7; }
+    .jr-ic { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .jr-ring { fill: none; stroke: var(--accent); stroke-width: 1.4; opacity: calc(var(--lit) * 0.55); }
+    .jr-pulse { fill: var(--accent); stroke: var(--paper-alt); stroke-width: 2.5; offset-distance: calc(var(--pulse,0) * 1%); offset-rotate: 0deg; }
+    .jr-vstops { position: relative; z-index: 1; list-style: none; margin: 0; padding: 0; }
+    .jr-vstop { box-sizing: border-box; min-height: clamp(260px, 40vh, 380px); display: flex; flex-direction: column; justify-content: center; width: 46%; }
+    .jr-vstop.side-right { margin-left: auto; text-align: left; }
+    .jr-vstop.side-left { margin-right: auto; text-align: right; }
+    .jr-vtag { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 12px; }
+    .jr-vstop h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(26px, 3.4vw, 40px); line-height: 1.08; color: var(--ink); margin-bottom: 12px; }
+    .jr-vstop p { font-size: 16.5px; line-height: 1.6; color: var(--ink-2); max-width: 420px; }
+    .jr-vstop.side-right p { margin-right: auto; }
+    .jr-vstop.side-left p { margin-left: auto; }
+    @media (max-width: 680px) {
+      .journey { padding: 64px 0; }
+      .jr-vstop, .jr-vstop.side-left, .jr-vstop.side-right { width: 100%; margin: 0; text-align: left; padding-left: 76px; min-height: clamp(180px, 30vh, 250px); }
+      .jr-vstop.side-left p, .jr-vstop.side-right p { margin: 0; }
+    }
+    /* ═══ handoffs — the single signal descends through the seams between sections ═══ */
+    .handoffs { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+    .handoff { position: absolute; width: 24px; height: 130px; transform: translateX(-50%); }
+    .ho-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .ho-base { stroke: var(--edge-line); stroke-width: 1.4; fill: none; }
+    .ho-ink { stroke: var(--accent); stroke-width: 2; fill: none; }
+    .ho-land { fill: var(--paper); stroke: color-mix(in srgb, var(--ink-4), var(--accent-ink) calc(var(--lit, 0) * 100%)); stroke-width: 1.6; }
+    .ho-dot { fill: var(--accent); stroke: var(--paper); stroke-width: 1.5; }
+    .jr-lead { max-width: 600px; margin: 18px auto 0; color: var(--ink-2); }
   </style>
 </head>
 <body>
 
   <div class="progress-bar" aria-hidden="true"></div>
+
+  <!-- handoffs: the single signal passes between sections through the seams (whitespace, never over content) -->
+  <div class="handoffs" aria-hidden="true"></div>
 
   <svg style="position:absolute;width:0;height:0;" aria-hidden="true">
     <filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
@@ -913,6 +954,17 @@
 
           <text x="280" y="492" class="h-cap" text-anchor="middle">EDGE AI MODULE · Neural-ART</text>
         </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- the journey/road is now the page-spanning spine (.spine) that threads every section -->
+  <section class="journey" id="journey" aria-label="The journey, from a sensor reading to an app you can talk to">
+    <div class="wrap">
+      <div class="journey-head">
+        <span class="eyebrow"><b>The journey</b></span>
+        <h2 class="t-display jr-title">From a raw sensor reading to an app you can <em>talk to</em>.</h2>
+        <p class="t-body jr-lead">Follow the signal down the page. It is read on the device, decided on the device, carried to an agent, escalated to the cloud only when it must be, and handed to an app you can talk to.</p>
       </div>
     </div>
   </section>
@@ -2029,6 +2081,61 @@
       .to('.oem-svg .oem-wave-resume', { drawSVG: '100%', duration: 1.2 }, 4.9);
   }
 
+  // handoffs — the ONE signal passes between sections through the seams. Each connector
+  // sits in the whitespace between two sections (never over content); as you reach a
+  // seam, the dot descends it, carrying the signal from one station to the next.
+  function HO_SECS() {
+    return ['.hero', '#journey', '#edge', '#problem', '#platform', '#how-it-works', '#silicon', '#security', '#oem', '#developers', '#cta']
+      .map(function (s) { return document.querySelector(s); }).filter(Boolean);
+  }
+  function createHandoffs() {
+    var host = document.querySelector('.handoffs');
+    if (!host) return [];
+    var n = Math.max(0, HO_SECS().length - 1);
+    if (host.children.length !== n) {
+      host.innerHTML = '';
+      for (var i = 0; i < n; i++) {
+        var el = document.createElement('div');
+        el.className = 'handoff';
+        el.style.left = '50%';
+        el.innerHTML = '<svg class="ho-svg" viewBox="0 0 24 130" fill="none">' +
+          '<line class="ho-base" x1="12" y1="6" x2="12" y2="116"/>' +
+          '<line class="ho-ink" x1="12" y1="6" x2="12" y2="116" pathLength="100"/>' +
+          '<circle class="ho-land" cx="12" cy="122" r="5"/>' +
+          '<circle class="ho-dot" cx="12" cy="6" r="4"/></svg>';
+        host.appendChild(el);
+      }
+    }
+    return [].slice.call(host.children);
+  }
+  function positionHandoffs() {
+    var host = document.querySelector('.handoffs'); if (!host) return;
+    var secs = HO_SECS();
+    for (var i = 0; i < host.children.length; i++) {
+      if (secs[i]) host.children[i].style.top = (secs[i].offsetTop + secs[i].offsetHeight - 64) + 'px';
+    }
+  }
+  function initHandoffs() {
+    var els = createHandoffs(); positionHandoffs();
+    if (!els.length) return;
+    ScrollTrigger.addEventListener('refresh', positionHandoffs);
+    els.forEach(function (el) {
+      var ink = el.querySelector('.ho-ink'), dot = el.querySelector('.ho-dot'), land = el.querySelector('.ho-land');
+      gsap.set(ink, { drawSVG: '0%' });
+      gsap.set(dot, { attr: { cy: 6 }, opacity: 0 });
+      gsap.set(land, { '--lit': 0 });
+      gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: el, start: 'top 85%', end: 'bottom 42%', scrub: 0.5 } })
+        .set(dot, { opacity: 1 }, 0)
+        .to(ink, { drawSVG: '100%', duration: 1 }, 0)
+        .to(dot, { attr: { cy: 116 }, duration: 1 }, 0)
+        .to(land, { '--lit': 1, duration: 0.4 }, 0.9)
+        .to(dot, { opacity: 0, duration: 0.2 }, 1);
+    });
+  }
+  // build static connectors immediately (visible even without GSAP) and keep positioned
+  createHandoffs(); positionHandoffs();
+  window.addEventListener('resize', positionHandoffs, { passive: true });
+
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
 
@@ -2094,6 +2201,7 @@
       //    draw the chip, stroke the mesh edges outward, light the nodes;
       //    on scroll the figure drifts and one packet departs downward.
       initHeroFabric();
+      initHandoffs();
 
       // 3) edge intelligence loop — pin the stage and scrub the whole sequence.
       //    Created BEFORE the triggers below it, with refreshPriority, so its pin
@@ -2101,8 +2209,7 @@
       var loop = gsap.timeline({
         defaults: { ease: 'none' },
         scrollTrigger: {
-          trigger: '.showcase-stage', start: 'top top', end: '+=2600',
-          pin: true, scrub: 0.4, anticipatePin: 1, refreshPriority: 1
+          trigger: '.showcase-stage', start: 'top 80%', end: 'bottom 20%', scrub: 0.5
         }
       });
       // everything starts undrawn; DrawSVGPlugin strokes it on as you scroll
